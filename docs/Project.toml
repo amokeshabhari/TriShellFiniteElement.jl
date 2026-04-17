@@ -1,0 +1,6 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+TriShellFiniteElement = "4f2873d8-418d-4a23-a33c-c2fdbebf1db2"
+
+[sources]
+TriShellFiniteElement = {path = ".."}
