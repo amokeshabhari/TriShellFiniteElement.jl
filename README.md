@@ -92,13 +92,6 @@ N₂ = ξ                     N₅ = 4ξη
 N₃ = η                     N₆ = 4η(1 − ξ − η)
 ```
 
-<<<<<<< HEAD
-=======
-![Local coordinates and shape functions](docs/src/assets/moen2026_p4_img1.png)
-
-*Local reference coordinates ξ–η and the six shape functions for w. Mid-edge nodes N₄–N₆ are eliminated by static condensation, leaving 3 corner nodes × 3 DOF (w, ψₓ, ψᵧ).*
-
->>>>>>> 4705ff221a8ad3cf7ce4b603ecdfcfc523adf6bb
 ### Static condensation
 
 The 3 mid-edge DOF (N₄–N₆) are eliminated numerically per element, reducing the 12×12 bending+shear partition to 9×9. Analytical condensation via symbolic tools yields correct but extremely long expressions; numerical condensation is more practical.
@@ -110,13 +103,6 @@ The 3 mid-edge DOF (N₄–N₆) are eliminated numerically per element, reducin
 | Membrane, geometric, shear | 1-point | Linear integrands; exact |
 | Bending | 3-point | Quadratic N₄–N₆ require higher-order rule |
 
-<<<<<<< HEAD
-=======
-![3-point Gauss rule for triangles](docs/src/assets/moen2026_p6_img1.png)
-
-*3-point Gauss quadrature points and weights for the standard triangle with vertices (0,0), (1,0), (0,1): ξᵢ/ηᵢ ∈ {1/6, 2/3} and Wᵢ = 1/6.*
-
->>>>>>> 4705ff221a8ad3cf7ce4b603ecdfcfc523adf6bb
 ### Drilling DOF stabilisation
 
 A 5-DOF-per-node element (u, v, w, ψₓ, ψᵧ) produces a singular stiffness when non-coplanar elements share a node. The in-plane rotational DOF θᵤ is added with stabilisation stiffness:
@@ -174,69 +160,30 @@ Kᵉ_global = Rᵀ Kᵉ_local R
 
 All examples: 100 mm × 1000 mm isotropic plate, E = 200,000 MPa, ν = 0.30. Seven mesh densities (45 → 4,884,365 DOF). Benchmarked against Abaqus S4R/S3R and closed-form analytical solutions (Euler-Bernoulli / Timoshenko).
 
-<<<<<<< HEAD
-=======
-![Boundary conditions](docs/src/assets/moen2026_p7_img1.png)
-
-*Plate boundary conditions: ends fixed in Y, midspan pinned in Z, two corner nodes in X.*
-
->>>>>>> 4705ff221a8ad3cf7ce4b603ecdfcfc523adf6bb
 ### Out-of-plane bending — midspan line load
 
 Analytical: 1.289 mm (thick, t = 10 mm) | 156.252 mm (thin, t = 1 mm)
 
-<<<<<<< HEAD
-=======
-![](docs/src/assets/moen2026_p8_img1.png) ![](docs/src/assets/moen2026_p8_img2.png)
-
->>>>>>> 4705ff221a8ad3cf7ce4b603ecdfcfc523adf6bb
 ### Out-of-plane bending — uniform pressure
 
 Analytical: 0.80075 mm (thick) | 97.657 mm (thin)
 
-<<<<<<< HEAD
-=======
-![](docs/src/assets/moen2026_p9_img1.png) ![](docs/src/assets/moen2026_p9_img2.png)
-
->>>>>>> 4705ff221a8ad3cf7ce4b603ecdfcfc523adf6bb
 ### In-plane bending — midspan line load
 
 Analytical: 1.289 mm (thick) | 64.45 mm (thin)
 
-<<<<<<< HEAD
-=======
-![](docs/src/assets/moen2026_p10_img1.png) ![](docs/src/assets/moen2026_p10_img2.png)
-
->>>>>>> 4705ff221a8ad3cf7ce4b603ecdfcfc523adf6bb
 ### In-plane bending — uniform pressure
 
 Analytical: 0.80075 mm (thick) | 40.0375 mm (thin)
 
-<<<<<<< HEAD
-=======
-![](docs/src/assets/moen2026_p11_img1.png) ![](docs/src/assets/moen2026_p11_img2.png)
-
->>>>>>> 4705ff221a8ad3cf7ce4b603ecdfcfc523adf6bb
 ### Column buckling (linear)
 
 Euler critical stress (with shear): 1603.78 N/mm² (thick) | 0.65797 N/mm² (thin)
 
-<<<<<<< HEAD
-=======
-![](docs/src/assets/moen2026_p12_img1.png) ![](docs/src/assets/moen2026_p12_img2.png)
-
->>>>>>> 4705ff221a8ad3cf7ce4b603ecdfcfc523adf6bb
 ### Steel column base plate with bolt holes
 
 Base plate meshed with [Gmsh.jl](https://github.com/JuliaFEM/Gmsh.jl); fixed BCs at bolt holes; tensile axial load applied at column stub.
 
-<<<<<<< HEAD
-=======
-![](docs/src/assets/moen2026_p13_img1.png) ![](docs/src/assets/moen2026_p13_img2.png)
-
-*Left: undeformed mesh. Right: out-of-plane deformation contour.*
-
->>>>>>> 4705ff221a8ad3cf7ce4b603ecdfcfc523adf6bb
 ---
 
 ## Installation
@@ -248,72 +195,6 @@ Pkg.add(url="https://github.com/runtosolve/TriShellFiniteElement.jl")
 
 ---
 
-<<<<<<< HEAD
-=======
-## Usage
-
-### Element-level stiffness
-
-```julia
-using Ferrite, Tensors, TriShellFiniteElement
-
-E = 200_000.0; ν = 0.30; t = 1.0   # MPa, —, mm
-
-# Node coordinates in the local 2D plane
-x = [Tensors.Vec((0.0, 0.0)), Tensors.Vec((100.0, 0.0)), Tensors.Vec((0.0, 100.0))]
-
-ip3 = TriShellFiniteElement.IP3()
-ip6 = TriShellFiniteElement.IP6()
-qr1 = QuadratureRule{RefTriangle}(1)   # 1-point (membrane / shear)
-qr3 = QuadratureRule{RefTriangle}(2)   # 3-point (bending — IP6 requires this)
-cv3 = CellValues(qr1, ip3, ip3);  reinit!(cv3, x)
-cv6 = CellValues(qr3, ip6, ip3);  reinit!(cv6, x)
-
-Dm = TriShellFiniteElement.calculate_membrane_constitutive_matrix(E, ν, t)  # 3×3
-Db = TriShellFiniteElement.calculate_bending_constitutive_matrix(E, ν, t)   # 3×3
-Ds = TriShellFiniteElement.calculate_shear_constitutive_matrix(E, ν, t)     # 2×2
-
-Ke_m = TriShellFiniteElement.calculate_element_membrane_stiffness_matrix(Dm, cv3)  # 6×6
-Ke_b = TriShellFiniteElement.calculate_element_bending_stiffness_matrix(Db, cv6)   # 12×12
-Ke_s = TriShellFiniteElement.calculate_element_shear_stiffness_matrix(Ds, cv6)     # 12×12
-```
-
-### Full 18×18 local shell stiffness
-
-```julia
-x3d = [Vec((0.0,0.0,0.0)), Vec((100.0,0.0,0.0)), Vec((0.0,100.0,0.0))]
-Ke  = zeros(18, 18)
-TriShellFiniteElement.local_elastic_stiffness_matrix!(Ke, x3d, E, ν, t)
-```
-
-### Global assembly and buckling
-
-```julia
-using Ferrite, TriShellFiniteElement
-
-grid = generate_grid(Triangle, (10,10), Vec((0.0,0.0,0.0)), Vec((1000.0,1000.0,0.0)))
-dh   = DofHandler(grid)
-ip   = Lagrange{RefTriangle,1}()
-add!(dh, :u, ip^3)   # u, v, w
-add!(dh, :θ, ip^3)   # θₓ, θᵧ, θᵤ
-close!(dh)
-
-ip3 = TriShellFiniteElement.IP3();  ip6 = TriShellFiniteElement.IP6()
-qr1 = QuadratureRule{RefTriangle}(1);  qr3 = QuadratureRule{RefTriangle}(2)
-
-K  = allocate_matrix(dh)
-K  = TriShellFiniteElement.assemble_global_Ke!(K, dh, qr1, qr3, ip3, ip6, E, ν, t)
-
-# After linear static solve for σXX, σYY, τXY:
-Kg = allocate_matrix(dh)
-Kg = TriShellFiniteElement.assemble_global_Kg!(Kg, dh, σXX, σYY, τXY)
-
-# Solve: K φ = λ Kᵍ φ  (use ArnoldiMethod.jl or KrylovKit.jl)
-```
-
----
-
->>>>>>> 4705ff221a8ad3cf7ce4b603ecdfcfc523adf6bb
 ## Dependencies
 
 | Package | Role |
